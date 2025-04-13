@@ -13,7 +13,7 @@
   <ng-container *ngIf="user$ | async as user; else notLogged">
     <ng-container *ngIf="isAdmin$ | async; else normalUser">
       <a mat-button class="nav-link" routerLink="/admin" routerLinkActive="active-link">
-        <mat-icon>dashboard</mat-icon> Admin Vezérlőpult
+        <mat-icon>dashboard</mat-icon> Admin
       </a>
     </ng-container>
     <ng-template #normalUser>
