@@ -1,0 +1,208 @@
+<div class="container">
+  <div class="profile-header">
+    <h1>Felhasználói profil</h1>
+    <p *ngIf="userData">{{ userData.email }}</p>
+  </div>
+
+  <mat-card class="profile-card">
+    <mat-tab-group [(selectedIndex)]="selectedTabIndex" animationDuration="300ms">
+      <!-- Személyes adatok fül -->
+      <mat-tab label="Személyes adatok">
+        <div class="tab-content">
+          <form [formGroup]="profileForm" class="profile-form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Név</mat-label>
+              <input matInput formControlName="fullName" placeholder="Add meg a teljes nevedet">
+              <mat-error *ngIf="profileForm.get('fullName')?.hasError('maxlength')">
+                A név nem lehet hosszabb 50 karakternél
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Telefonszám</mat-label>
+              <input matInput formControlName="phoneNumber" placeholder="Add meg a telefonszámodat">
+              <mat-hint>Formátum: +36 70 123 4567</mat-hint>
+              <mat-error *ngIf="profileForm.get('phoneNumber')?.hasError('pattern')">
+                Érvénytelen telefonszám formátum
+              </mat-error>
+            </mat-form-field>
+
+            <p class="info-text">Csak azok a mezők lesznek frissítve, amelyeket kitöltöttél.</p>
+            
+            <div class="action-buttons">
+              <button 
+                mat-raised-button 
+                color="primary" 
+                [disabled]="profileForm.invalid || (!profileForm.value.fullName && !profileForm.value.phoneNumber)" 
+                (click)="updateProfile()">
+                Adatok mentése
+              </button>
+            </div>
+          </form>
+        </div>
+      </mat-tab>
+
+      <!-- Jelszóváltoztatás fül -->
+      <mat-tab label="Jelszó módosítása">
+        <div class="tab-content">
+          <form [formGroup]="passwordForm" class="profile-form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Jelenlegi jelszó</mat-label>
+              <input matInput type="password" formControlName="currentPassword">
+              <mat-error *ngIf="passwordForm.get('currentPassword')?.hasError('required')">
+                A jelenlegi jelszó megadása kötelező
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Új jelszó</mat-label>
+              <input matInput type="password" formControlName="newPassword">
+              <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('required')">
+                Az új jelszó megadása kötelező
+              </mat-error>
+              <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('minlength')">
+                Az új jelszónak legalább 6 karakter hosszúnak kell lennie
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Új jelszó megerősítése</mat-label>
+              <input matInput type="password" formControlName="confirmPassword">
+              <mat-error *ngIf="passwordForm.get('confirmPassword')?.hasError('required')">
+                Az új jelszó megerősítése kötelező
+              </mat-error>
+              <mat-error *ngIf="passwordForm.get('confirmPassword')?.hasError('passwordMismatch')">
+                A két jelszó nem egyezik
+              </mat-error>
+            </mat-form-field>
+
+            <p class="info-text">A jelszavadnak legalább 6 karakter hosszúnak kell lennie.</p>
+            
+            <div class="action-buttons">
+              <button 
+                mat-raised-button 
+                color="primary" 
+                [disabled]="passwordForm.invalid" 
+                (click)="changePassword()">
+                Jelszó módosítása
+              </button>
+            </div>
+          </form>
+        </div>
+      </mat-tab>
+
+      <!-- Rendelési előzmények fül -->
+      <mat-tab label="Rendelési előzmények">
+        <div class="tab-content">
+          <ng-container *ngIf="!selectedOrder; else orderDetails">
+            <div *ngIf="isOrdersLoading" class="loading-container">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p>Rendelések betöltése...</p>
+            </div>
+
+            <div *ngIf="!isOrdersLoading && userOrders.length === 0" class="empty-state">
+              <mat-icon>receipt_long</mat-icon>
+              <h3>Még nincsenek rendeléseid</h3>
+              <p>A rendelési előzmények itt fognak megjelenni, ha már rendeltél termékeket.</p>
+              <button mat-raised-button color="primary" routerLink="/parts">Böngéssz a termékek közt</button>
+            </div>
+
+            <div *ngIf="!isOrdersLoading && userOrders.length > 0" class="orders-list">
+              <h3>Rendelési előzmények</h3>
+              <mat-card *ngFor="let order of userOrders" class="order-item" (click)="showOrderDetails(order)">
+                <mat-card-header>
+                  <mat-card-title>
+                    Rendelés #{{ order.id?.substring(0, 8) || 'N/A' }}
+                  </mat-card-title>
+                  <mat-card-subtitle>
+                    {{ order.createdAt | date: 'yyyy. MM. dd. HH:mm' }}
+                  </mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="order-summary">
+                    <div class="order-info">
+                      <p><strong>Termékek:</strong> {{ order.items.length }} db</p>
+                      <p><strong>Összesen:</strong> {{ order.totalAmount | hungarianCurrency }}</p>
+                    </div>
+                    <div class="order-status">
+                      <mat-chip [color]="getStatusColor(order.status)">
+                        {{ getStatusText(order.status) }}
+                      </mat-chip>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </ng-container>
+
+          <ng-template #orderDetails>
+            <div class="order-details" *ngIf="selectedOrder">
+              <div class="order-details-header">
+                <button mat-icon-button (click)="backToOrdersList()">
+                  <mat-icon>arrow_back</mat-icon>
+                </button>
+                <h2>Rendelés részletei</h2>
+              </div>
+
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title>
+                    Rendelés #{{ selectedOrder.id?.substring(0, 8) || 'N/A' }}
+                  </mat-card-title>
+                  <mat-card-subtitle>
+                    <div class="order-dates">
+                      <span>Rendelés időpontja: {{ selectedOrder.createdAt | date: 'yyyy. MM. dd. HH:mm' }}</span>
+                      <mat-chip [color]="getStatusColor(selectedOrder.status)">
+                        {{ getStatusText(selectedOrder.status) }}
+                      </mat-chip>
+                    </div>
+                  </mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="order-sections">
+                    <!-- Szállítási cím -->
+                    <div class="order-section">
+                      <h3>Szállítási cím</h3>
+                      <div class="address-info" *ngIf="selectedOrder.shippingAddress">
+                        <p><strong>Név:</strong> {{ selectedOrder.shippingAddress.fullName }}</p>
+                        <p><strong>Cím:</strong> {{ selectedOrder.shippingAddress.address }}</p>
+                        <p><strong>Város:</strong> {{ selectedOrder.shippingAddress.city }}</p>
+                        <p><strong>Irányítószám:</strong> {{ selectedOrder.shippingAddress.postalCode }}</p>
+                        <p *ngIf="selectedOrder.shippingAddress.phoneNumber">
+                          <strong>Telefonszám:</strong> {{ selectedOrder.shippingAddress.phoneNumber }}
+                        </p>
+                      </div>
+                    </div>
+
+                    <!-- Rendelt termékek -->
+                    <div class="order-section">
+                      <h3>Rendelt termékek</h3>
+                      <mat-list>
+                        <mat-list-item *ngFor="let item of selectedOrder.items">
+                          <div class="order-item-details">
+                            <div class="item-name">{{ item.part.name }}</div>
+                            <div class="item-quantity">{{ item.quantity }} db</div>
+                            <div class="item-price">{{ item.part.price | hungarianCurrency }}</div>
+                            <div class="item-total">{{ item.part.price * item.quantity | hungarianCurrency }}</div>
+                          </div>
+                        </mat-list-item>
+                      </mat-list>
+                    </div>
+
+                    <!-- Összegzés -->
+                    <div class="order-section">
+                      <div class="order-total">
+                        <h3>Végösszeg</h3>
+                        <div class="total-amount">{{ selectedOrder.totalAmount | hungarianCurrency }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </ng-template>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card>
+</div>

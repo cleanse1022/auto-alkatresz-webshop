@@ -1,0 +1,20 @@
+<mat-accordion>
+  <mat-expansion-panel *ngFor="let order of orders">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Rendelés: {{ order.id }} – {{ order.date | date:'short' }}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <p>Összeg: {{ order.total | hungarianCurrency }}</p>
+    <p>Státusz: {{ order.status }}</p>
+    <!-- Rendelt tételek részletei, pl. a items[] tömb if van -->
+    <div *ngIf="order.items">
+      <p>Tételek:</p>
+      <ul>
+        <li *ngFor="let item of order.items">
+          {{ item.name }} – {{ item.price | hungarianCurrency }}
+        </li>
+      </ul>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>

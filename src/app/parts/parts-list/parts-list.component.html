@@ -1,0 +1,116 @@
+<div class="container">
+  <h1 class="page-title">Alkatrészek katalógusa</h1>
+
+  <!-- Szűrő panelek -->
+  <div class="filter-container">
+    <!-- Keresés -->
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Keresés</mat-label>
+      <input matInput [formControl]="searchControl" placeholder="Alkatrész keresése...">
+      <button *ngIf="searchControl.value" matSuffix mat-icon-button aria-label="Keresés törlése" 
+              (click)="searchControl.setValue('')">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+    
+    <!-- Kategória szűrő -->
+    <mat-form-field appearance="outline" class="category-field">
+      <mat-label>Kategória</mat-label>
+      <mat-select [formControl]="selectedCategory">
+        <mat-option>Mind</mat-option>
+        <mat-option *ngFor="let category of categories" [value]="category">
+          {{ category }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    
+    <!-- Márka szűrő -->
+    <mat-form-field appearance="outline" class="brand-field">
+      <mat-label>Márka</mat-label>
+      <mat-select [formControl]="selectedBrand">
+        <mat-option>Mind</mat-option>
+        <mat-option *ngFor="let brand of brands" [value]="brand">
+          {{ brand }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    
+    <!-- Rendezés -->
+    <mat-form-field appearance="outline" class="sort-field">
+      <mat-label>Rendezés</mat-label>
+      <mat-select [formControl]="sortDirection">
+        <mat-option *ngFor="let option of sortOptions" [value]="option.value">
+          {{ option.viewValue }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    
+    <!-- Szűrés törlése gomb -->
+    <button mat-raised-button color="accent" class="clear-button" (click)="clearFilters()"
+            [disabled]="!searchControl.value && !selectedCategory.value && !selectedBrand.value && sortDirection.value === 'default'">
+      <mat-icon>filter_alt_off</mat-icon> Szűrés törlése
+    </button>
+  </div>
+
+  <!-- Loading spinner while fetching data -->
+  <div *ngIf="loading" class="loading-spinner">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Alkatrészek betöltése...</p>
+  </div>
+
+  <!-- No parts found message -->
+  <div *ngIf="filteredParts.length === 0 && !loading" class="no-data">
+    <ng-container *ngIf="allParts.length === 0; else noMatchingParts">
+      <mat-icon>inventory_2</mat-icon>
+      <p>Nincs még egyetlen alkatrész sem a rendszerben.</p>
+    </ng-container>
+    <ng-template #noMatchingParts>
+      <mat-icon>search_off</mat-icon>
+      <p>Nincs találat a megadott feltételekkel.</p>
+      <button mat-raised-button color="primary" (click)="clearFilters()">Szűrés törlése</button>
+    </ng-template>
+  </div>
+
+  <!-- Parts grid with images -->
+  <div *ngIf="filteredParts.length > 0 && !loading" class="parts-grid">
+    <mat-card *ngFor="let part of filteredParts" class="part-card" (click)="part.id && viewPart(part.id)">
+      <div class="part-image-container">
+        <img [src]="part.imageUrl || 'assets/images/placeholder.png'" 
+             alt="{{ part.name }}" 
+             class="part-image"
+             appImageFallback>
+      </div>
+      <mat-card-content>
+        <h3 class="part-name">{{ part.name }}</h3>
+        <div class="part-info">
+          <span class="part-category">{{ part.category }}</span>
+          <span class="brand-badge">{{ part.brand }}</span>
+        </div>
+        <p class="part-price">{{ part.price | hungarianCurrency }}</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="part.id && viewPart(part.id); $event.stopPropagation()">
+          <mat-icon>visibility</mat-icon> Részletek
+        </button>
+        <button 
+          *ngIf="!(isAdmin$ | async)" 
+          mat-button 
+          color="accent"
+          (click)="addToCart(part); $event.stopPropagation()">
+          <mat-icon>shopping_cart</mat-icon> Kosárba
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Admin akciógombok -->
+  <div *ngIf="isAdmin$ | async" class="admin-actions">
+    <button 
+      mat-raised-button 
+      color="primary" 
+      routerLink="/parts/new">
+      <mat-icon>add</mat-icon> Új alkatrész felvétele
+    </button>
+  </div>
+</div>

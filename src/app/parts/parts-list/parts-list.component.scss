@@ -1,0 +1,201 @@
+.container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-title {
+  color: var(--primary-color);
+  font-size: 28px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--accent-color);
+  padding-bottom: 10px;
+}
+
+table {
+  width: 100%;
+}
+
+.mat-mdc-row:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 40px 0;
+  
+  p {
+    margin-top: 16px;
+    color: #666;
+  }
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 40px 0;
+  color: #666;
+  
+  button {
+    margin-top: 16px;
+  }
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 16px 16px 16px;
+  
+  button {
+    flex: 1;
+    margin: 0 4px;
+  }
+}
+
+/* Szűrő konténer stílusok */
+.filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+  align-items: flex-start;
+  
+  .search-field {
+    flex: 2 1 300px;
+  }
+  
+  .category-field, .brand-field, .sort-field {
+    flex: 1 1 200px;
+  }
+  
+  .clear-button {
+    height: 56px;
+  }
+  
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+  
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    height: 56px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  
+  ::ng-deep .mat-mdc-form-field-flex {
+    height: 56px;
+  }
+  
+  @media (max-width: 768px) {
+    .search-field, .category-field, .sort-field {
+      flex: 1 1 100%;
+    }
+    
+    .clear-button {
+      width: 100%;
+    }
+  }
+}
+
+/* Alkatrészek rács elrendezése */
+.parts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.part-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-radius: 8px;
+  overflow: hidden;
+  
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.part-image-container {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f8f8;
+  overflow: hidden;
+  padding: 16px;
+}
+
+.part-image {
+  max-width: 100%;
+  max-height: 170px;
+  object-fit: contain;
+}
+
+.part-name {
+  margin: 0 0 8px 0;
+  font-weight: 500;
+  font-size: 18px;
+  color: var(--primary-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.part-category {
+  color: #666;
+  margin: 0 0 10px 0;
+  font-size: 0.9rem;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.part-price {
+  font-weight: 600;
+  color: var(--accent-color);
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+mat-card-content {
+  flex-grow: 1;
+  padding: 16px;
+}
+
+/* Admin műveleti terület */
+.admin-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px;
+  
+  button {
+    display: flex;
+    align-items: center;
+    
+    mat-icon {
+      margin-right: 6px;
+    }
+  }
+}
+
+/* Reszponzív beállítások */
+@media (max-width: 600px) {
+  .parts-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+  }
+  
+  .part-card {
+    max-width: 100%;
+  }
+}

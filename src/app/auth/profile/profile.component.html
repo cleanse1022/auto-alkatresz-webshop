@@ -1,0 +1,540 @@
+<div class="admin-dashboard">
+  <div class="dashboard-header">
+    <h1>Admin Vezérlőpult</h1>
+    <p *ngIf="user$ | async as user">Bejelentkezve: {{ user.email }} (Adminisztrátor)</p>
+  </div>
+
+  <!-- Összesítő számok az oldal tetején - Javított szerkezet -->
+  <div class="stat-cards">
+    <mat-card class="stat-card">
+      <div class="stat-card-content">
+        <div class="stat-icon-container">
+          <mat-icon class="stat-icon orders-icon">shopping_cart</mat-icon>
+        </div>
+        <div class="stat-content">
+          <h3>Rendelések</h3>
+          <p class="stat-value">{{ totalOrdersCount }}</p>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <div class="stat-card-content">
+        <div class="stat-icon-container">
+          <mat-icon class="stat-icon revenue-icon">attach_money</mat-icon>
+        </div>
+        <div class="stat-content">
+          <h3>Bevétel</h3>
+          <p class="stat-value">{{ totalOrdersValue | hungarianCurrency }}</p>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <div class="stat-card-content">
+        <div class="stat-icon-container">
+          <mat-icon class="stat-icon products-icon">category</mat-icon>
+        </div>
+        <div class="stat-content">
+          <h3>Termékek</h3>
+          <p class="stat-value">{{ totalPartsCount }}</p>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <div class="stat-card-content">
+        <div class="stat-icon-container">
+          <mat-icon class="stat-icon users-icon">people</mat-icon>
+        </div>
+        <div class="stat-content">
+          <h3>Felhasználók</h3>
+          <p class="stat-value">{{ totalUsersCount }}</p>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Navigációs tabfülek -->
+  <mat-tab-group [selectedIndex]="selectedTabIndex" 
+    (selectedIndexChange)="onSelectedIndexChange($event)"
+    mat-stretch-tabs="false" mat-align-tabs="start">
+
+    <!-- RENDELÉSEK KEZELÉSE -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">receipt_long</mat-icon>
+        Rendelések
+      </ng-template>
+
+      <div class="tab-content">
+        <div class="tab-header">
+          <h2>Rendelések kezelése</h2>
+          <button mat-raised-button color="primary" (click)="loadAllOrders()">
+            <mat-icon>refresh</mat-icon> Frissítés
+          </button>
+        </div>
+
+        <!-- Betöltési állapot megjelenítése -->
+        <div *ngIf="isOrdersLoading" class="loading-spinner">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Rendelések betöltése...</p>
+        </div>
+
+        <!-- Ha vannak rendelések és nincs betöltés -->
+        <div class="orders-list" *ngIf="!isOrdersLoading && orders.length > 0">
+          <table mat-table [dataSource]="ordersDataSource" matSort #orderSort="matSort" (matSortChange)="sortData($event, 'orders')" class="mat-elevation-z2 orders-table">
+            <!-- Rendelés ID oszlop -->
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Rendelés ID</th>
+              <td mat-cell *matCellDef="let order">{{ order.id }}</td>
+            </ng-container>
+
+            <!-- Felhasználó oszlop -->
+            <ng-container matColumnDef="user">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Felhasználó</th>
+              <td mat-cell *matCellDef="let order">{{ order.userName }}</td>
+            </ng-container>
+            
+            <!-- Dátum oszlop -->
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Dátum</th>
+              <td mat-cell *matCellDef="let order">{{ order.createdAt | date:'yyyy. MM. dd. HH:mm' }}</td>
+            </ng-container>
+            
+            <!-- Összeg oszlop -->
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Összeg</th>
+              <td mat-cell *matCellDef="let order">{{ order.totalAmount | hungarianCurrency }}</td>
+            </ng-container>
+            
+            <!-- Státusz oszlop -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Státusz</th>
+              <td mat-cell *matCellDef="let order">
+                <span [ngClass]="{
+                  'status-pending': order.status === orderStatuses.PENDING,
+                  'status-processing': order.status === orderStatuses.PROCESSING,
+                  'status-shipped': order.status === orderStatuses.SHIPPED,
+                  'status-delivered': order.status === orderStatuses.DELIVERED,
+                  'status-cancelled': order.status === orderStatuses.CANCELLED
+                }">
+                  {{ getStatusText(order.status) }}
+                </span>
+              </td>
+            </ng-container>
+            
+            <!-- Műveletek oszlop -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Műveletek</th>
+              <td mat-cell *matCellDef="let order">
+                <button mat-button [matMenuTriggerFor]="orderMenu" color="primary">
+                  <mat-icon>more_horiz</mat-icon>
+                </button>
+                
+                <mat-menu #orderMenu="matMenu">
+                  <button mat-menu-item (click)="updateOrderStatus(order.id!, orderStatuses.PROCESSING)" 
+                          [disabled]="order.status === orderStatuses.PROCESSING || order.status === orderStatuses.DELIVERED || order.status === orderStatuses.CANCELLED">
+                    <mat-icon>update</mat-icon>
+                    <span>Feldolgozás alatt</span>
+                  </button>
+                  
+                  <button mat-menu-item (click)="updateOrderStatus(order.id!, orderStatuses.SHIPPED)"
+                          [disabled]="order.status === orderStatuses.SHIPPED || order.status === orderStatuses.DELIVERED || order.status === orderStatuses.CANCELLED">
+                    <mat-icon>local_shipping</mat-icon>
+                    <span>Kiszállítva</span>
+                  </button>
+                  
+                  <button mat-menu-item (click)="updateOrderStatus(order.id!, orderStatuses.DELIVERED)"
+                          [disabled]="order.status === orderStatuses.DELIVERED || order.status === orderStatuses.CANCELLED">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>Kézbesítve</span>
+                  </button>
+                  
+                  <button mat-menu-item (click)="updateOrderStatus(order.id!, orderStatuses.CANCELLED)"
+                          [disabled]="order.status === orderStatuses.CANCELLED || order.status === orderStatuses.DELIVERED">
+                    <mat-icon class="cancel-icon">cancel</mat-icon>
+                    <span>Visszavonva</span>
+                  </button>
+                  
+                  <mat-divider></mat-divider>
+                  
+                  <button mat-menu-item [matMenuTriggerFor]="orderDetailsMenu">
+                    <mat-icon>info</mat-icon>
+                    <span>Részletek megtekintése</span>
+                  </button>
+                </mat-menu>
+                
+                <mat-menu #orderDetailsMenu="matMenu">
+                  <div class="order-details-menu">
+                    <h4>Szállítási adatok</h4>
+                    <div *ngIf="order.shippingAddress">
+                      <p><strong>Név:</strong> {{ order.shippingAddress.fullName }}</p>
+                      <p><strong>Cím:</strong> {{ order.shippingAddress.address }}</p>
+                      <p><strong>Város:</strong> {{ order.shippingAddress.city }}</p>
+                      <p><strong>Irányítószám:</strong> {{ order.shippingAddress.postalCode }}</p>
+                      <p *ngIf="order.shippingAddress.phoneNumber"><strong>Telefon:</strong> {{ order.shippingAddress.phoneNumber }}</p>
+                    </div>
+                    
+                    <h4>Tételek</h4>
+                    <div *ngIf="order.items && order.items.length">
+                      <div *ngFor="let item of order.items" class="order-item">
+                        {{ item.part.name }} ({{ item.quantity }} db) - {{ item.part.price * item.quantity | hungarianCurrency }}
+                      </div>
+                    </div>
+                  </div>
+                </mat-menu>
+              </td>
+            </ng-container>
+            
+            <tr mat-header-row *matHeaderRowDef="['id', 'user', 'date', 'amount', 'status', 'actions']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['id', 'user', 'date', 'amount', 'status', 'actions'];"></tr>
+          </table>
+        </div>
+
+        <!-- Ha nincsenek rendelések és nincs betöltés -->
+        <div *ngIf="!isOrdersLoading && orders.length === 0" class="no-data">
+          <mat-icon class="no-data-icon">shopping_cart</mat-icon>
+          <p>Nincsenek rendelések az adatbázisban.</p>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- TERMÉKEK KEZELÉSE -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">category</mat-icon>
+        Termékek
+      </ng-template>
+
+      <div class="tab-content">
+        <div class="tab-header">
+          <h2>Termékek kezelése</h2>
+          <div>
+            <button mat-raised-button color="accent" routerLink="/parts/new">
+              <mat-icon>add</mat-icon> Új termék
+            </button>
+            <button mat-raised-button color="primary" (click)="loadAllParts()" class="ml-2">
+              <mat-icon>refresh</mat-icon> Frissítés
+            </button>
+          </div>
+        </div>
+
+        <!-- Betöltési állapot megjelenítése -->
+        <div *ngIf="isPartsLoading" class="loading-spinner">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Termékek betöltése...</p>
+        </div>
+
+        <!-- Ha vannak termékek és nincs betöltés -->
+        <div class="parts-list" *ngIf="!isPartsLoading && parts.length > 0">
+          <table mat-table [dataSource]="partsDataSource" matSort #partSort="matSort" (matSortChange)="sortData($event, 'parts')" class="mat-elevation-z2 parts-table">
+            <!-- ID oszlop -->
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+              <td mat-cell *matCellDef="let part">{{ part.id }}</td>
+            </ng-container>
+            
+            <!-- Név oszlop -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Név</th>
+              <td mat-cell *matCellDef="let part">{{ part.name }}</td>
+            </ng-container>
+            
+            <!-- Kategória oszlop -->
+            <ng-container matColumnDef="category">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Kategória</th>
+              <td mat-cell *matCellDef="let part">{{ part.category }}</td>
+            </ng-container>
+            
+            <!-- Márka oszlop -->
+            <ng-container matColumnDef="brand">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Márka</th>
+              <td mat-cell *matCellDef="let part">{{ part.brand }}</td>
+            </ng-container>
+            
+            <!-- Ár oszlop -->
+            <ng-container matColumnDef="price">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Ár</th>
+              <td mat-cell *matCellDef="let part">{{ part.price | hungarianCurrency }}</td>
+            </ng-container>
+            
+            <!-- Műveletek oszlop -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Műveletek</th>
+              <td mat-cell *matCellDef="let part">
+                <button mat-icon-button color="primary" [routerLink]="['/parts', part.id, 'edit']" matTooltip="Szerkesztés">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deletePart(part.id!)" matTooltip="Törlés">
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" [routerLink]="['/parts', part.id]" matTooltip="Részletek">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+            
+            <tr mat-header-row *matHeaderRowDef="['id', 'name', 'category', 'brand', 'price', 'actions']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['id', 'name', 'category', 'brand', 'price', 'actions'];"></tr>
+          </table>
+        </div>
+
+        <!-- Ha nincsenek termékek és nincs betöltés -->
+        <div *ngIf="!isPartsLoading && parts.length === 0" class="no-data">
+          <mat-icon class="no-data-icon">category</mat-icon>
+          <p>Nincsenek termékek az adatbázisban.</p>
+          <button mat-raised-button color="primary" routerLink="/parts/new">
+            <mat-icon>add</mat-icon> Új termék hozzáadása
+          </button>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- FELHASZNÁLÓK KEZELÉSE -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">people</mat-icon>
+        Felhasználók
+      </ng-template>
+
+      <div class="tab-content">
+        <div class="tab-header">
+          <h2>Felhasználók kezelése</h2>
+          <button mat-raised-button color="primary" (click)="loadAllUsers()">
+            <mat-icon>refresh</mat-icon> Frissítés
+          </button>
+        </div>
+
+        <!-- Betöltési állapot megjelenítése -->
+        <div *ngIf="isUsersLoading" class="loading-spinner">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Felhasználók betöltése...</p>
+        </div>
+
+        <!-- Ha vannak felhasználók és nincs betöltés -->
+        <div class="users-list" *ngIf="!isUsersLoading && users.length > 0">
+          <table mat-table [dataSource]="usersDataSource" matSort #userSort="matSort" (matSortChange)="sortData($event, 'users')" class="mat-elevation-z2 users-table">
+            <!-- ID oszlop -->
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+              <td mat-cell *matCellDef="let user">{{ user.uid }}</td>
+            </ng-container>
+            
+            <!-- Email oszlop -->
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+              <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+            </ng-container>
+            
+            <!-- Név oszlop -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Név</th>
+              <td mat-cell *matCellDef="let user">{{ user.fullName || 'Nincs megadva' }}</td>
+            </ng-container>
+            
+            <!-- Szerep oszlop -->
+            <ng-container matColumnDef="role">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Jogosultság</th>
+              <td mat-cell *matCellDef="let user">
+                <span class="role-badge" [ngClass]="{'role-admin': user.role === 'admin', 'role-user': user.role === 'user'}">
+                  {{ user.role === 'admin' ? 'Admin' : 'Felhasználó' }}
+                </span>
+              </td>
+            </ng-container>
+            
+            <tr mat-header-row *matHeaderRowDef="['id', 'email', 'name', 'role']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['id', 'email', 'name', 'role'];"></tr>
+          </table>
+        </div>
+
+        <!-- Ha nincsenek felhasználók és nincs betöltés -->
+        <div *ngIf="!isUsersLoading && users.length === 0" class="no-data">
+          <mat-icon class="no-data-icon">people</mat-icon>
+          <p>Nincsenek felhasználók az adatbázisban.</p>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- STATISZTIKÁK -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">bar_chart</mat-icon>
+        Statisztikák
+      </ng-template>
+
+      <div class="tab-content">
+        <div class="tab-header">
+          <h2>Webshop statisztikák</h2>
+          <button mat-raised-button color="primary" (click)="calculateStatistics()">
+            <mat-icon>refresh</mat-icon> Frissítés
+          </button>
+        </div>
+        
+        <div class="stats-container">
+          <mat-card class="stats-card">
+            <mat-card-header>
+              <div mat-card-avatar class="stats-header-image orders-icon">
+                <mat-icon>shopping_cart</mat-icon>
+              </div>
+              <mat-card-title>Rendelések statisztikái</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p><strong>Összes rendelés:</strong> {{ totalOrdersCount }} db</p>
+              <p><strong>Összbevétel:</strong> {{ totalOrdersValue | hungarianCurrency }}</p>
+              
+              <div class="status-counts" *ngIf="orders && orders.length">
+                <p>Rendelések állapot szerint:</p>
+                <div class="status-chart">
+                  <div class="status-bar">
+                    <div class="status-segment pending" 
+                        *ngIf="pendingOrdersCount > 0"
+                        [style.width.%]="pendingOrdersPercent">
+                    </div>
+                    <div class="status-segment processing" 
+                        *ngIf="processingOrdersCount > 0"
+                        [style.width.%]="processingOrdersPercent">
+                    </div>
+                    <div class="status-segment shipped" 
+                        *ngIf="shippedOrdersCount > 0"
+                        [style.width.%]="shippedOrdersPercent">
+                    </div>
+                    <div class="status-segment delivered" 
+                        *ngIf="deliveredOrdersCount > 0"
+                        [style.width.%]="deliveredOrdersPercent">
+                    </div>
+                    <div class="status-segment cancelled" 
+                        *ngIf="cancelledOrdersCount > 0"
+                        [style.width.%]="cancelledOrdersPercent">
+                    </div>
+                  </div>
+                </div>
+                <!-- Új, egyértelmű színmagyarázat a csíkdiagramhoz -->
+                <div class="status-color-legend">
+                  <div class="color-legend-item" *ngIf="pendingOrdersCount > 0">
+                    <span class="color-square pending"></span>
+                    <span class="status-label">Függőben: {{ pendingOrdersCount }} db</span>
+                  </div>
+                  <div class="color-legend-item" *ngIf="processingOrdersCount > 0">
+                    <span class="color-square processing"></span>
+                    <span class="status-label">Feldolgozás alatt: {{ processingOrdersCount }} db</span>
+                  </div>
+                  <div class="color-legend-item" *ngIf="shippedOrdersCount > 0">
+                    <span class="color-square shipped"></span>
+                    <span class="status-label">Kiszállítva: {{ shippedOrdersCount }} db</span>
+                  </div>
+                  <div class="color-legend-item" *ngIf="deliveredOrdersCount > 0">
+                    <span class="color-square delivered"></span>
+                    <span class="status-label">Kézbesítve: {{ deliveredOrdersCount }} db</span>
+                  </div>
+                  <div class="color-legend-item" *ngIf="cancelledOrdersCount > 0">
+                    <span class="color-square cancelled"></span>
+                    <span class="status-label">Visszavonva: {{ cancelledOrdersCount }} db</span>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          
+          <mat-card class="stats-card">
+            <mat-card-header>
+              <div mat-card-avatar class="stats-header-image products-icon">
+                <mat-icon>category</mat-icon>
+              </div>
+              <mat-card-title>Termékek statisztikái</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p><strong>Összes termék:</strong> {{ totalPartsCount }} db</p>
+              <p *ngIf="parts && parts.length"><strong>Átlagár:</strong> {{ averagePrice | hungarianCurrency }}</p>
+            </mat-card-content>
+          </mat-card>
+          
+          <mat-card class="stats-card">
+            <mat-card-header>
+              <div mat-card-avatar class="stats-header-image users-icon">
+                <mat-icon>people</mat-icon>
+              </div>
+              <mat-card-title>Felhasználók statisztikái</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p><strong>Összes felhasználó:</strong> {{ totalUsersCount }} fő</p>
+              <p *ngIf="users && users.length"><strong>Adminisztrátorok:</strong> {{ adminUsersCount }} fő</p>
+              <p *ngIf="users && users.length"><strong>Átlagos rendelések száma/felhasználó:</strong> 
+                {{ ordersPerUser.toFixed(1) }}</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- ADATMÓDOSÍTÁS FÜL -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon profile-icon">manage_accounts</mat-icon>
+        Adatmódosítás
+      </ng-template>
+
+      <div class="tab-content">
+        <div class="tab-header">
+          <h2>Adminisztrátori adatok módosítása</h2>
+        </div>
+
+        <div class="password-change-container">
+          <mat-card class="password-change-card">
+            <mat-card-header>
+              <mat-card-title>Jelszó módosítása</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <form [formGroup]="passwordForm" class="password-form">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Jelenlegi jelszó</mat-label>
+                  <input matInput type="password" formControlName="currentPassword">
+                  <mat-error *ngIf="passwordForm.get('currentPassword')?.hasError('required')">
+                    A jelenlegi jelszó megadása kötelező
+                  </mat-error>
+                  <mat-error *ngIf="passwordForm.get('currentPassword')?.hasError('minlength')">
+                    A jelszónak legalább 6 karakter hosszúnak kell lennie
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Új jelszó</mat-label>
+                  <input matInput type="password" formControlName="newPassword">
+                  <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('required')">
+                    Az új jelszó megadása kötelező
+                  </mat-error>
+                  <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('minlength')">
+                    Az új jelszónak legalább 6 karakter hosszúnak kell lennie
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Új jelszó megerősítése</mat-label>
+                  <input matInput type="password" formControlName="confirmPassword">
+                  <mat-error *ngIf="passwordForm.get('confirmPassword')?.hasError('required')">
+                    Az új jelszó megerősítése kötelező
+                  </mat-error>
+                  <mat-error *ngIf="passwordForm.get('confirmPassword')?.hasError('passwordMismatch')">
+                    A két jelszó nem egyezik
+                  </mat-error>
+                </mat-form-field>
+              </form>
+
+              <div *ngIf="passwordChangeSuccess" class="success-message">
+                <mat-icon>check_circle</mat-icon>
+                <p>A jelszó sikeresen megváltoztatva!</p>
+              </div>
+            </mat-card-content>
+            <mat-card-actions align="end">
+              <button mat-raised-button color="primary" 
+                      [disabled]="passwordForm.invalid" 
+                      (click)="changePassword()">
+                Jelszó módosítása
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

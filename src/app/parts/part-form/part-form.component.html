@@ -1,0 +1,104 @@
+<mat-card>
+  <mat-card-title>{{ isEditMode ? 'Alkatrész szerkesztése' : 'Új alkatrész felvétele' }}</mat-card-title>
+  <mat-card-content>
+    <div *ngIf="loading" class="loading-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Betöltés...</p>
+    </div>
+
+    <form *ngIf="!loading || isEditMode" [formGroup]="partForm" (ngSubmit)="onSubmit()">
+      <div class="form-container">
+        <div class="form-fields">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Név</mat-label>
+            <input matInput formControlName="name">
+            <mat-error *ngIf="partForm.get('name')?.hasError('required')">A név megadása kötelező</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Kategória</mat-label>
+            <input matInput formControlName="category">
+            <mat-error *ngIf="partForm.get('category')?.hasError('required')">A kategória megadása kötelező</mat-error>
+          </mat-form-field>
+
+          <!-- Új márka mező legördülő listával -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Márka</mat-label>
+            <input matInput formControlName="brand" [matAutocomplete]="brandAuto">
+            <mat-autocomplete #brandAuto="matAutocomplete">
+              <mat-option *ngFor="let brand of popularBrands" [value]="brand">
+                {{brand}}
+              </mat-option>
+            </mat-autocomplete>
+            <mat-hint>Kezdje el beírni a márka nevét vagy válasszon a listából</mat-hint>
+            <mat-error *ngIf="partForm.get('brand')?.hasError('required')">A márka megadása kötelező</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Ár (Ft)</mat-label>
+            <input matInput type="number" formControlName="price">
+            <mat-error *ngIf="partForm.get('price')?.hasError('required')">Az ár megadása kötelező</mat-error>
+            <mat-error *ngIf="partForm.get('price')?.hasError('min')">Az árnak nagyobbnak kell lennie nullánál</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Leírás</mat-label>
+            <textarea matInput formControlName="description" rows="4"></textarea>
+          </mat-form-field>
+        </div>
+        
+        <div class="image-container">
+          <h3>Termék kép</h3>
+          
+          <!-- Kép előnézet -->
+          <div class="image-preview-container" *ngIf="imagePreview">
+            <img [src]="imagePreview" alt="Előnézet" class="image-preview">
+            <!-- Törlés gomb csak akkor látható, ha a kép NEM a placeholder -->
+            <button *ngIf="!isPlaceholderImage()" 
+                    mat-mini-fab color="warn" 
+                    type="button" 
+                    (click)="removeImage()" 
+                    class="remove-image-btn" 
+                    matTooltip="Kép eltávolítása">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+          
+          <!-- Placeholder, ha nincs kép -->
+          <div class="image-placeholder" *ngIf="!imagePreview">
+            <mat-icon class="placeholder-icon">image</mat-icon>
+            <p>Nincs kiválasztott kép</p>
+          </div>
+          
+          <!-- Kép feltöltő gomb -->
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="button" 
+            (click)="fileInput.click()" 
+            class="upload-btn"
+            [disabled]="loading">
+            <mat-icon>upload</mat-icon> Kép kiválasztása
+          </button>
+          
+          <input 
+            type="file" 
+            #fileInput 
+            style="display: none" 
+            (change)="onImageSelected($event)" 
+            accept="image/*">
+            
+          <mat-hint>Támogatott formátumok: JPG, PNG, GIF (max. 5MB)</mat-hint>
+          <p *ngIf="loading && imageFile" class="upload-status">Kép feltöltése folyamatban...</p>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button mat-button type="button" (click)="goBack()">Mégse</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="partForm.invalid || loading">
+          {{ isEditMode ? 'Mentés' : 'Felvétel' }}
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

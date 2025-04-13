@@ -1,0 +1,104 @@
+<div class="order-summary-container">
+  <div class="order-summary-content">
+    <mat-card class="summary-card">
+      <!-- Loading spinner -->
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Rendelés adatainak betöltése...</p>
+      </div>
+
+      <!-- Error message -->
+      <div *ngIf="!isLoading && error" class="error-container">
+        <mat-icon color="warn">error</mat-icon>
+        <h2>Hiba történt</h2>
+        <p>{{ error }}</p>
+        <button mat-raised-button color="primary" (click)="backToHome()">
+          <mat-icon>home</mat-icon> Vissza a főoldalra
+        </button>
+      </div>
+
+      <!-- Order details -->
+      <div *ngIf="!isLoading && !error && order" class="order-details">
+        <div class="success-header">
+          <mat-icon color="primary">check_circle</mat-icon>
+          <h1>Köszönjük a rendelést!</h1>
+          <p class="order-id">Rendelés azonosító: <strong>{{ orderId }}</strong></p>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="order-info">
+          <h2>Rendelés összegzése</h2>
+          
+          <div class="shipping-details">
+            <h3>Szállítási adatok</h3>
+            <div class="address-details" *ngIf="order?.shippingAddress">
+              <p><strong>Név:</strong> {{ shippingAddress.fullName || '' }}</p>
+              <p><strong>Cím:</strong> {{ shippingAddress.address || '' }}</p>
+              <p><strong>Város:</strong> {{ shippingAddress.city || '' }}</p>
+              <p><strong>Irányítószám:</strong> {{ shippingAddress.postalCode || '' }}</p>
+              <p><strong>Telefonszám:</strong> {{ shippingAddress.phoneNumber || '' }}</p>
+            </div>
+          </div>
+
+          <div class="order-items" *ngIf="order?.items?.length">
+            <h3>Megrendelt termékek</h3>
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th>Termék</th>
+                  <th>Mennyiség</th>
+                  <th>Egységár</th>
+                  <th>Részösszeg</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of order?.items">
+                  <td class="product-name">
+                    <div class="product-image">
+                      <img [src]="item?.part?.imageUrl || 'assets/images/placeholder.png'" 
+                           alt="{{ item?.part?.name }}" 
+                           appImageFallback>
+                    </div>
+                    <div class="product-details">
+                      <p class="name">{{ item?.part?.name }}</p>
+                      <p class="category">{{ item?.part?.category }}</p>
+                    </div>
+                  </td>
+                  <td>{{ item?.quantity || 0 }} db</td>
+                  <td>{{ (item?.part?.price || 0) | hungarianCurrency }}</td>
+                  <td>{{ ((item?.part?.price || 0) * (item?.quantity || 0)) | hungarianCurrency }}</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3" class="total-label">Végösszeg:</td>
+                  <td class="total-amount">{{ orderTotalAmount | hungarianCurrency }}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <div class="order-status" *ngIf="orderStatus">
+            <h3>Rendelés állapota</h3>
+            <div class="status-badge" [ngClass]="orderStatus.toLowerCase()">
+              {{ getStatusText(orderStatus) }}
+            </div>
+            <p class="status-info">
+              A rendelését feldolgozzuk és hamarosan értesítést küldünk a szállításról.
+            </p>
+          </div>
+
+          <div class="actions">
+            <button mat-raised-button color="primary" (click)="viewOrders()">
+              <mat-icon>list</mat-icon> Rendeléseim megtekintése
+            </button>
+            <button mat-stroked-button color="primary" (click)="backToHome()">
+              <mat-icon>home</mat-icon> Vissza a főoldalra
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+</div>

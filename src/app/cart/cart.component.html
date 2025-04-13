@@ -1,0 +1,102 @@
+<div class="container">
+  <h1 class="page-title">Kosár tartalma</h1>
+  
+  <!-- Az async pipe eredményét egy template változóban tesszük elérhetővé -->
+  <ng-container *ngIf="cartItems$ | async as cartItems; else loading">
+    <!-- Ha nincs elem, üzenet jelenik meg -->
+    <div *ngIf="cartItems.length === 0" class="empty-cart">
+      <mat-icon>shopping_cart</mat-icon>
+      <h2>A kosár üres</h2>
+      <p>Fedezze fel alkatrészeinket, és tegyen valamit a kosárba.</p>
+      <button mat-raised-button color="primary" routerLink="/parts">
+        <mat-icon>shopping_bag</mat-icon> Vásárlás folytatása
+      </button>
+    </div>
+    
+    <!-- Ha van elem, kártyaként jelennek meg -->
+    <div *ngIf="cartItems.length > 0" class="cart-content">
+      <div class="cart-items">
+        <mat-card class="cart-summary-card">
+          <mat-card-title>Kosár összegzése</mat-card-title>
+          <mat-card-content>
+            <table class="summary-table">
+              <tr>
+                <td>Termékek ({{ totalItems }} db):</td>
+                <td class="price">{{ subtotal | hungarianCurrency }}</td>
+              </tr>
+              <tr class="tax-row">
+                <td>ÁFA (27%):</td>
+                <td class="price">{{ tax | hungarianCurrency }}</td>
+              </tr>
+              <tr class="shipping-row">
+                <td>Szállítási díj:</td>
+                <td class="price">{{ shippingCost | hungarianCurrency }}</td>
+              </tr>
+              <tr class="total-row">
+                <td><strong>Fizetendő összesen:</strong></td>
+                <td class="price total-price">{{ totalPrice | hungarianCurrency }}</td>
+              </tr>
+            </table>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="accent" routerLink="/checkout" class="checkout-btn">
+              <mat-icon>payment</mat-icon> Megrendelés leadása
+            </button>
+            <button mat-stroked-button color="primary" routerLink="/parts" class="continue-shopping-btn">
+              <mat-icon>arrow_back</mat-icon> Vásárlás folytatása
+            </button>
+            <button mat-stroked-button color="warn" (click)="clearCart()" class="clear-cart-btn">
+              <mat-icon>remove_shopping_cart</mat-icon> Kosár ürítése
+            </button>
+          </mat-card-actions>
+        </mat-card>
+        
+        <div class="cart-items-list">
+          <h2>Kosárban lévő termékek</h2>
+          
+          <mat-card *ngFor="let item of cartItems" class="cart-item-card">
+            <div class="cart-item-content">
+              <div class="item-image">
+                <img [src]="item.part.imageUrl || 'assets/images/placeholder.png'" 
+                    alt="{{ item.part.name }}"
+                    appImageFallback>
+              </div>
+              
+              <div class="item-details">
+                <h3>{{ item.part.name }}</h3>
+                <p class="item-category">{{ item.part.category }}</p>
+                <p class="item-price">{{ item.part.price | hungarianCurrency }}</p>
+              </div>
+              
+              <div class="item-quantity">
+                <div class="quantity-controls">
+                  <button mat-icon-button color="primary" (click)="decreaseQuantity(item)" [disabled]="item.quantity <= 1">
+                    <mat-icon>remove</mat-icon>
+                  </button>
+                  <span class="quantity-value">{{ item.quantity }}</span>
+                  <button mat-icon-button color="primary" (click)="increaseQuantity(item)">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </div>
+                <p class="item-subtotal">Részösszeg: <strong>{{ item.part.price * item.quantity | hungarianCurrency }}</strong></p>
+              </div>
+              
+              <div class="item-actions">
+                <button mat-icon-button color="warn" (click)="removeItem(item)" matTooltip="Eltávolítás a kosárból">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  
+  <ng-template #loading>
+    <div class="loading-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Kosár betöltése...</p>
+    </div>
+  </ng-template>
+</div>

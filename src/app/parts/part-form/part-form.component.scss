@@ -1,0 +1,114 @@
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.form-fields {
+  flex: 1;
+  min-width: 300px;
+}
+
+.image-container {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  background-color: #f8f8f8;
+  border-radius: 4px;
+  
+  h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: rgba(0, 0, 0, 0.7);
+  }
+}
+
+.image-preview-container {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  margin-bottom: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: white;
+  
+  .image-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  
+  .remove-image-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+  }
+}
+
+.image-placeholder {
+  width: 250px;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border: 1px dashed #ccc;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  
+  .placeholder-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: #ccc;
+  }
+  
+  p {
+    color: #999;
+    margin-top: 8px;
+  }
+}
+
+.upload-btn {
+  margin-bottom: 8px;
+}
+
+.upload-status {
+  color: #3f51b5;
+  font-style: italic;
+  margin-top: 8px;
+  text-align: center;
+}
+
+mat-hint {
+  text-align: center;
+  margin-top: 8px;
+  color: rgba(0, 0, 0, 0.6);
+}

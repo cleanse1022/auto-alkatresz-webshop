@@ -1,0 +1,82 @@
+<div class="checkout-container">
+  <h1>Megrendelés véglegesítése</h1>
+
+  <div class="checkout-content">
+    <!-- Bal oldali oszlop: Szállítási adatok -->
+    <div class="shipping-details">
+      <h2>Szállítási adatok</h2>
+      
+      <form [formGroup]="shippingForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Teljes név</mat-label>
+          <input matInput formControlName="fullName" placeholder="Vezetéknév Keresztnév">
+          <mat-error *ngIf="hasError('fullName', 'required')">A név megadása kötelező</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Cím</mat-label>
+          <input matInput formControlName="address" placeholder="Utca, házszám, emelet, ajtó">
+          <mat-error *ngIf="hasError('address', 'required')">A cím megadása kötelező</mat-error>
+        </mat-form-field>
+
+        <div class="two-column">
+          <mat-form-field appearance="outline">
+            <mat-label>Város</mat-label>
+            <input matInput formControlName="city" placeholder="Város">
+            <mat-error *ngIf="hasError('city', 'required')">A város megadása kötelező</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Irányítószám</mat-label>
+            <input matInput formControlName="postalCode" placeholder="1234">
+            <mat-error *ngIf="hasError('postalCode', 'required')">Az irányítószám megadása kötelező</mat-error>
+            <mat-error *ngIf="hasError('postalCode', 'pattern')">Érvénytelen irányítószám (4 számjegy)</mat-error>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Telefonszám</mat-label>
+          <input matInput formControlName="phoneNumber" placeholder="06201234567">
+          <mat-hint>Erre a számra fog értesítést kapni a rendelésről</mat-hint>
+          <mat-error *ngIf="hasError('phoneNumber', 'required')">A telefonszám megadása kötelező</mat-error>
+          <mat-error *ngIf="hasError('phoneNumber', 'pattern')">Érvénytelen telefonszám formátum (6-12 számjegy)</mat-error>
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button mat-flat-button color="primary" type="button" (click)="backToCart()">
+            <mat-icon>arrow_back</mat-icon> Vissza a kosárhoz
+          </button>
+          <button mat-flat-button color="accent" type="submit" [disabled]="isSubmitting">
+            <mat-icon>done</mat-icon> Megrendelés véglegesítése
+          </button>
+        </div>
+      </form>
+    </div>
+    
+    <!-- Jobb oldali oszlop: Rendelés összegzése -->
+    <div class="order-summary">
+      <h2>Rendelés összegzése</h2>
+
+      <div *ngIf="cartItems.length > 0; else emptyCart">
+        <div class="order-items">
+          <div *ngFor="let item of cartItems" class="order-item">
+            <div class="item-details">
+              <span class="item-name">{{item.part.name}}</span>
+              <span class="item-quantity">{{item.quantity}} db</span>
+            </div>
+            <span class="item-price">{{item.part.price * item.quantity | hungarianCurrency}}</span>
+          </div>
+        </div>
+
+        <div class="order-total">
+          <span>Összesen:</span>
+          <span class="total-amount">{{totalAmount | hungarianCurrency}}</span>
+        </div>
+      </div>
+
+      <ng-template #emptyCart>
+        <p class="empty-cart-message">A kosár jelenleg üres.</p>
+      </ng-template>
+    </div>
+  </div>
+</div>

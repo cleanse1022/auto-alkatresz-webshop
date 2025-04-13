@@ -1,0 +1,171 @@
+<div class="home-container">
+  <!-- Hero szekció - Bevezető és főinterakciók -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1>Minőségi autóalkatrészek, megfizethető áron</h1>
+      <p class="hero-subtitle">Több ezer alkatrész raktárról, azonnal. Vásároljon biztonságosan, megbízható forrásból.</p>
+      <div class="hero-actions">
+        <button mat-raised-button color="accent" class="shop-now-btn" routerLink="/parts">
+          <mat-icon>shopping_bag</mat-icon> Vásárlás most
+        </button>
+        <button *ngIf="!isLoggedIn" mat-stroked-button class="signup-btn" routerLink="/register">
+          Fiók létrehozása
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Alkatrész kategóriák szekció -->
+  <section class="categories-section">
+    <div class="container">
+      <h2 class="section-title">Népszerű kategóriák</h2>
+      <div class="categories-grid">
+        <!-- Fékrendszer kategória -->
+        <mat-card class="category-card">
+          <mat-icon class="category-icon">local_parking</mat-icon>
+          <mat-card-title>Fékrendszer</mat-card-title>
+          <mat-card-content>
+            <p>Fékbetétek, féktárcsák és teljes fékrendszerek minden autótípushoz.</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-button color="primary" routerLink="/parts" [queryParams]="{category: 'Fékrendszer'}">
+              Böngészés
+            </button>
+          </mat-card-actions>
+        </mat-card>
+
+        <!-- Motor kategória -->
+        <mat-card class="category-card">
+          <mat-icon class="category-icon">settings</mat-icon>
+          <mat-card-title>Motor</mat-card-title>
+          <mat-card-content>
+            <p>Motoralkatrészek, vezérlések, tömítések és egyéb motortechnikai elemek.</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-button color="primary" routerLink="/parts" [queryParams]="{category: 'Motor'}">
+              Böngészés
+            </button>
+          </mat-card-actions>
+        </mat-card>
+
+        <!-- Karosszéria kategória -->
+        <mat-card class="category-card">
+          <mat-icon class="category-icon">directions_car</mat-icon>
+          <mat-card-title>Karosszéria</mat-card-title>
+          <mat-card-content>
+            <p>Ajtók, tetők, motorháztetők, lökhárítók és egyéb karosszéria elemek.</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-button color="primary" routerLink="/parts" [queryParams]="{category: 'Karosszéria'}">
+              Böngészés
+            </button>
+          </mat-card-actions>
+        </mat-card>
+
+        <!-- Elektromos rendszer kategória -->
+        <mat-card class="category-card">
+          <mat-icon class="category-icon">power</mat-icon>
+          <mat-card-title>Elektromos rendszer</mat-card-title>
+          <mat-card-content>
+            <p>Akkumulátorok, indítómotorok, generátorok és kábelezési megoldások.</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-button color="primary" routerLink="/parts" [queryParams]="{category: 'Elektromos rendszer'}">
+              Böngészés
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+  </section>
+
+  <!-- Webáruház előnyei szekció -->
+  <section class="features-section">
+    <div class="container">
+      <div class="features-grid">
+        <!-- Gyors szállítás -->
+        <div class="feature-item">
+          <mat-icon class="feature-icon">local_shipping</mat-icon>
+          <h3>Gyors szállítás</h3>
+          <p>Rendeléseit 1-3 munkanapon belül kiszállítjuk az ország egész területén.</p>
+        </div>
+
+        <!-- Szakértő tanácsadás -->
+        <div class="feature-item">
+          <mat-icon class="feature-icon">support_agent</mat-icon>
+          <h3>Szakértő tanácsadás</h3>
+          <p>Autószerelő szakembereink segítenek a megfelelő alkatrész kiválasztásában.</p>
+        </div>
+
+        <!-- Minőségi garancia -->
+        <div class="feature-item">
+          <mat-icon class="feature-icon">verified</mat-icon>
+          <h3>Minőségi garancia</h3>
+          <p>Minden termékünkre 1 év minőségi garanciát vállalunk, biztonságos vásárlás.</p>
+        </div>
+
+        <!-- Hatalmas választék -->
+        <div class="feature-item">
+          <mat-icon class="feature-icon">category</mat-icon>
+          <h3>Hatalmas választék</h3>
+          <p>Több ezer alkatrész raktárról, minden népszerű autómárkához és modellhez.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Népszerű termékek szekció -->
+  <section class="popular-products-section">
+    <div class="container">
+      <h2 class="section-title">Legnépszerűbb alkatrészek</h2>
+      <div class="view-all-row">
+        <button mat-button color="primary" routerLink="/parts">
+          Összes termék megtekintése <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+
+      <div *ngIf="featuredParts.length === 0" class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Termékek betöltése...</p>
+      </div>
+
+      <div *ngIf="featuredParts.length > 0" class="products-grid">
+        <mat-card *ngFor="let part of featuredParts" class="product-card" [routerLink]="['/parts', part.id]">
+          <div class="part-image-container">
+            <img [src]="part.imageUrl || 'assets/images/placeholder.png'" 
+                 alt="{{ part.name }}" 
+                 class="part-image"
+                 appImageFallback>
+          </div>
+          <mat-card-content>
+            <h3>{{ part.name }}</h3>
+            <p class="part-description">{{ (part.description || '') | slice:0:100 }}{{ (part.description?.length || 0) > 100 ? '...' : '' }}</p>
+            <p class="price">{{ part.price | hungarianCurrency }}</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-button color="primary">
+              <mat-icon>visibility</mat-icon> Részletek
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hírlevél feliratkozás szekció -->
+  <section class="newsletter-section">
+    <div class="container">
+      <div class="newsletter-content">
+        <h2>Iratkozzon fel hírlevelünkre</h2>
+        <p>Értesüljön elsőként a legújabb akciókról, új termékekről és hasznos szerelési tippekről.</p>
+        <form class="newsletter-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Email cím</mat-label>
+            <input matInput type="email" placeholder="Nem működik, csak dísz">
+          </mat-form-field>
+          <button mat-raised-button color="accent" [disabled]="true">Feliratkozás</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>

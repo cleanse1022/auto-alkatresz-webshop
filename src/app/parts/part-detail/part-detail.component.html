@@ -1,0 +1,89 @@
+<div class="container">
+  <ng-container *ngIf="part$ | async as part; else loading">
+    <div class="breadcrumb">
+      <a routerLink="/parts">Alkatrészek</a> <mat-icon>chevron_right</mat-icon> <span>{{ part.name }}</span>
+    </div>
+    
+    <mat-card class="product-detail-card">
+      <div class="part-detail-container">
+        <div class="part-image-container">
+          <img [src]="part.imageUrl || 'assets/images/placeholder.png'" 
+               alt="{{ part.name }}" 
+               class="part-image"
+               appImageFallback>
+        </div>
+        <div class="part-info">
+          <h1 class="part-title">{{ part.name }}</h1>
+          <div class="part-meta">
+            <span class="part-category">{{ part.category }}</span>
+            <span class="brand-badge">{{ part.brand }}</span>
+            <span class="part-id">Cikkszám: #{{ part.id?.substring(0, 8) }}</span>
+          </div>
+          
+          <p class="part-price">{{ part.price | hungarianCurrency }}</p>
+          
+          <div class="part-description">
+            <h3>Termék leírása</h3>
+            <p>{{ part.description }}</p>
+          </div>
+          
+          <!-- Mennyiség választó, csak nem-admin felhasználóknak -->
+          <div class="quantity-selector" *ngIf="!(isAdmin$ | async)">
+            <h3>Mennyiség</h3>
+            <div class="quantity-controls">
+              <button mat-icon-button color="primary" (click)="decreaseQuantity()">
+                <mat-icon>remove</mat-icon>
+              </button>
+              <mat-form-field appearance="outline">
+                <input matInput type="number" min="1" [(ngModel)]="quantity" (keydown)="validateQuantityInput($event)">
+              </mat-form-field>
+              <button mat-icon-button color="primary" (click)="increaseQuantity()">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+          </div>
+          
+          <div class="part-actions">
+            <!-- Vissza gomb mindenki számára -->
+            <button mat-button color="basic" (click)="goBack()">
+              <mat-icon>arrow_back</mat-icon> Vissza
+            </button>
+            
+            <!-- Csak admin felhasználók láthatják a szerkesztés és törlés gombokat -->
+            <ng-container *ngIf="isAdmin$ | async">
+              <button mat-raised-button color="primary" (click)="editPart(part)">
+                <mat-icon>edit</mat-icon> Szerkesztés
+              </button>
+              <button mat-raised-button color="warn" (click)="deletePart(part)">
+                <mat-icon>delete</mat-icon> Törlés
+              </button>
+            </ng-container>
+            
+            <!-- Kosárba rakás gomb módosítva a választott mennyiséggel -->
+            <button mat-raised-button color="accent" class="add-to-cart-btn"
+              *ngIf="!(isAdmin$ | async)" 
+              (click)="addToCart(part)">
+              <mat-icon>shopping_cart</mat-icon> Kosárba ({{ quantity }} db)
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+    
+    <!-- Ajánlott termékek szekció példaként -->
+    <div class="recommended-products">
+      <h2>Ezt is érdemes lehet megnézni</h2>
+      <div class="recommended-products-grid">
+        <!-- Itt később dinamikusan hozzáadhatók az ajánlott termékek -->
+        <p class="empty-recommendation">Még nincs ajánlat, kérjük nézze meg a többi termékünket.</p>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #loading>
+    <div class="loading-spinner">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Termék betöltése...</p>
+    </div>
+  </ng-template>
+</div>

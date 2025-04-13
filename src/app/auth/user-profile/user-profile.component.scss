@@ -1,0 +1,191 @@
+.container {
+  margin: 2rem auto;
+  max-width: 900px;
+  padding: 0 1rem;
+}
+
+.profile-header {
+  margin-bottom: 1.5rem;
+  
+  h1 {
+    margin-bottom: 0.25rem;
+  }
+  
+  p {
+    color: rgba(0, 0, 0, 0.6);
+    margin: 0;
+  }
+}
+
+.profile-card {
+  margin-bottom: 2rem;
+  border-radius: 8px;
+}
+
+.tab-content {
+  padding: 1.5rem;
+}
+
+.profile-form {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.info-text {
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+.action-buttons {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Rendelési előzmények */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  
+  p {
+    margin-top: 1rem;
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  
+  mat-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+    color: rgba(0, 0, 0, 0.4);
+    margin-bottom: 1rem;
+  }
+  
+  h3 {
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    color: rgba(0, 0, 0, 0.6);
+    margin-bottom: 1.5rem;
+    max-width: 400px;
+  }
+}
+
+.orders-list {
+  h3 {
+    margin-bottom: 1rem;
+  }
+}
+
+.order-item {
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.order-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .order-info p {
+    margin: 0.25rem 0;
+  }
+}
+
+/* Rendelés részletes nézet */
+.order-details-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  
+  h2 {
+    margin: 0;
+    margin-left: 0.5rem;
+  }
+}
+
+.order-dates {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.order-sections {
+  margin-top: 1.5rem;
+}
+
+.order-section {
+  margin-bottom: 2rem;
+  
+  h3 {
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+}
+
+.address-info p {
+  margin: 0.5rem 0;
+}
+
+.order-item-details {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr 1fr;
+  width: 100%;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  
+  .item-name {
+    font-weight: 500;
+  }
+  
+  .item-quantity {
+    text-align: center;
+  }
+  
+  .item-price, .item-total {
+    text-align: right;
+  }
+}
+
+.order-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 4px;
+  
+  h3 {
+    margin: 0;
+    border: none;
+  }
+  
+  .total-amount {
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+}

@@ -1,0 +1,507 @@
+/* Általános stílusok */
+.full-width {
+  width: 100%;
+}
+
+mat-card {
+  margin-bottom: 20px;
+}
+
+/* Profil űrlap stílusok */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Rendelések megjelenítés stílusai */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  
+  p {
+    margin-top: 16px;
+    color: #666;
+  }
+}
+
+.order-details {
+  margin: 10px 0;
+}
+
+.shipping-info, .order-items {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Rendelés státusz színezés */
+.status-pending {
+  color: #ff9800;
+  font-weight: 500;
+}
+
+.status-processing {
+  color: #2196f3;
+  font-weight: 500;
+}
+
+.status-shipped {
+  color: #9c27b0;
+  font-weight: 500;
+}
+
+.status-delivered {
+  color: #4caf50;
+  font-weight: 500;
+}
+
+.status-cancelled {
+  color: #f44336;
+  font-weight: 500;
+}
+
+/* Üres rendelések állapot */
+.no-orders {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 0;
+  text-align: center;
+}
+
+.no-orders-icon {
+  font-size: 48px;
+  height: 48px;
+  width: 48px;
+  margin-bottom: 16px;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.no-orders button {
+  margin-top: 16px;
+}
+
+/* Admin vezérlőpult alapvető stílusok */
+.admin-dashboard {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  margin-bottom: 24px;
+  
+  h1 {
+    margin: 0 0 8px;
+    font-size: 28px;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  p {
+    margin: 0;
+    color: #666;
+  }
+}
+
+/* Statisztikai kártyák az oldal tetején */
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  padding: 0;
+  transition: all 0.3s ease;
+  height: 90px;
+  box-sizing: border-box;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .stat-card-content {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 16px;
+  }
+  
+  .stat-icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 56px;
+    height: 56px;
+    margin-right: 16px;
+    flex-shrink: 0;
+  }
+  
+  .stat-icon {
+    font-size: 40px;
+    height: 40px;
+    width: 40px;
+    
+    &.orders-icon {
+      color: #3f51b5;
+    }
+    
+    &.revenue-icon {
+      color: #4caf50;
+    }
+    
+    &.products-icon {
+      color: #ff9800;
+    }
+    
+    &.users-icon {
+      color: #e91e63;
+    }
+  }
+  
+  .stat-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 400;
+      color: #666;
+      line-height: 1.2;
+    }
+    
+    .stat-value {
+      margin: 4px 0 0;
+      font-size: 24px;
+      font-weight: 500;
+      color: #333;
+      line-height: 1.4;
+    }
+  }
+}
+
+/* Tab panel stílusok */
+.tab-icon {
+  margin-right: 8px;
+}
+
+// Adatmódosítás fül ikon speciális színe
+.profile-icon {
+  color: #9c27b0; // Lila szín, ami eltér a többi fül ikonjától
+}
+
+// Jelszó módosítás űrlap stílusok
+.password-change-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+.password-change-card {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  
+  mat-card-header {
+    margin-bottom: 16px;
+  }
+  
+  mat-card-title {
+    font-size: 1.5rem;
+    color: #333;
+  }
+}
+
+.password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.success-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px;
+  background-color: rgba(76, 175, 80, 0.1);
+  border-radius: 4px;
+  
+  mat-icon {
+    color: #4caf50;
+  }
+  
+  p {
+    margin: 0;
+    color: #2e7d32;
+    font-weight: 500;
+  }
+}
+
+.tab-content {
+  padding: 16px 0;
+}
+
+.tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  
+  h2 {
+    margin: 0;
+    font-weight: 500;
+    font-size: 20px;
+  }
+}
+
+/* Táblázat stílusok */
+.orders-table,
+.parts-table,
+.users-table {
+  width: 100%;
+}
+
+/* Készlet információk CSS eltávolítva */
+
+/* Szerepek jelölésére szolgáló badge-ek */
+.role-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  
+  &.role-admin {
+    background-color: rgba(63, 81, 181, 0.15);
+    color: #3f51b5;
+  }
+  
+  &.role-user {
+    background-color: rgba(76, 175, 80, 0.15);
+    color: #4caf50;
+  }
+}
+
+/* Üres adatok megjelenítése */
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  text-align: center;
+  
+  .no-data-icon {
+    font-size: 64px;
+    height: 64px;
+    width: 64px;
+    margin-bottom: 16px;
+    color: rgba(0, 0, 0, 0.2);
+  }
+  
+  p {
+    margin-bottom: 16px;
+    color: #666;
+  }
+}
+
+/* Menük testreszabása */
+.order-details-menu {
+  padding: 16px;
+  min-width: 250px;
+  
+  h4 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  p {
+    margin: 4px 0;
+    font-size: 14px;
+  }
+  
+  .order-item {
+    padding: 4px 0;
+    font-size: 14px;
+    border-bottom: 1px solid #f0f0f0;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.ml-2 {
+  margin-left: 8px;
+}
+
+/* Statisztika stílusok */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.stats-card {
+  margin-bottom: 16px;
+  
+  mat-card-header {
+    margin-bottom: 16px;
+    
+    ::ng-deep .mat-mdc-card-header-text {
+      align-self: center;
+    }
+  }
+  
+  .stats-header-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    min-width: 40px;
+    min-height: 40px;
+    
+    mat-icon {
+      font-size: 24px;
+      height: 24px;
+      width: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      &.orders-icon {
+        color: #3f51b5;
+      }
+      
+      &.revenue-icon {
+        color: #4caf50;
+      }
+      
+      &.products-icon {
+        color: #ff9800;
+      }
+      
+      &.users-icon {
+        color: #e91e63;
+      }
+    }
+  }
+}
+
+/* Rendelés státusz vizualizáció */
+.status-counts {
+  margin-top: 16px;
+  
+  .status-chart {
+    margin-top: 8px;
+    
+    .status-bar {
+      display: flex;
+      height: 24px;
+      width: 100%;
+      border-radius: 4px;
+      overflow: hidden;
+      
+      .status-segment {
+        padding: 4px;
+        color: white;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        white-space: nowrap;
+        
+        &.pending {
+          background-color: #ff9800;
+        }
+        
+        &.processing {
+          background-color: #2196f3;
+        }
+        
+        &.shipped {
+          background-color: #9c27b0;
+        }
+        
+        &.delivered {
+          background-color: #4caf50;
+        }
+        
+        &.cancelled {
+          background-color: #f44336;
+        }
+      }
+    }
+  }
+  
+  /* Új színmagyarázat stílusok */
+  .status-color-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 10px;
+    background-color: #f8f8f8;
+    border-radius: 4px;
+  }
+  
+  .color-legend-item {
+    display: flex;
+    align-items: center;
+    margin-right: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .color-square {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    margin-right: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    
+    &.pending {
+      background-color: #ff9800;
+    }
+    
+    &.processing {
+      background-color: #2196f3;
+    }
+    
+    &.shipped {
+      background-color: #9c27b0;
+    }
+    
+    &.delivered {
+      background-color: #4caf50;
+    }
+    
+    &.cancelled {
+      background-color: #f44336;
+    }
+  }
+  
+  .status-label {
+    font-size: 14px;
+    font-weight: 400;
+    color: #333;
+  }
+}
