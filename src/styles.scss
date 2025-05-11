@@ -1,29 +1,153 @@
-/* Ebben a fájlban hozzáadhatsz globális stílusokat, valamint más stílusfájlokat is importálhatsz */
+/* Optimalizált globális stílusok, változók és mixinek - Webfejlesztési keretrendszerek projekt */
 
-// Színváltozók az egységes színséma érdekében
+// ========== VÁLTOZÓK ==========
 :root {
+  // Színséma változók - Alapszínek
   --primary-color: #1A237E; // Sötétkék - alap szín
   --primary-light: #534BAE; // Világosabb kék változat
   --primary-dark: #000051; // Sötétebb kék változat
   --accent-color: #FF3D00; // Narancs - kiegészítő szín
   --accent-light: #FF7539; // Világosabb narancs
   --accent-dark: #C30000; // Sötétebb narancs/piros
+  
+  // Szöveg és háttér színek
   --text-on-primary: #FFFFFF; // Fehér szöveg sötét háttéren
   --text-on-accent: #000000; // Fekete szöveg világos háttéren
   --background-color: #F5F5F5; // Világos háttérszín
   --card-background: #FFFFFF; // Kártya háttérszíne
   --border-color: #E0E0E0; // Elválasztóvonalak színe
+  
+  // Állapot színek
+  --success-color: #4CAF50;
+  --warning-color: #FFC107;
+  --error-color: #F44336;
+  --info-color: #2196F3;
+  
+  // Tipográfia változók
+  --font-family-base: 'Roboto', sans-serif;
+  --font-size-xs: 0.75rem;  // 12px
+  --font-size-sm: 0.875rem; // 14px
+  --font-size-md: 1rem;     // 16px
+  --font-size-lg: 1.25rem;  // 20px
+  --font-size-xl: 1.5rem;   // 24px
+  --font-size-xxl: 2rem;    // 32px
+  
+  // Térköz és méret változók
+  --spacing-xs: 0.25rem;    // 4px
+  --spacing-sm: 0.5rem;     // 8px
+  --spacing-md: 1rem;       // 16px
+  --spacing-lg: 1.5rem;     // 24px
+  --spacing-xl: 2rem;       // 32px
+  
+  // Árnyék változók
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  --shadow-md: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+  
+  // Kerekítés változók
+  --border-radius-sm: 3px;
+  --border-radius-md: 6px;
+  --border-radius-lg: 12px;
+  --border-radius-round: 50%;
+  
+  // Átmenet változók
+  --transition-fast: 0.15s ease;
+  --transition-medium: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  // Konténer maximális szélességek
+  --container-sm: 540px;
+  --container-md: 720px;
+  --container-lg: 960px;
+  --container-xl: 1140px;
 }
 
+// ========== MIXINEK ==========
+// Media query mixinek a reszponzív megjelenítéshez
+@mixin for-mobile-only {
+  @media (max-width: 599px) { @content; }
+}
+
+@mixin for-tablet-portrait-up {
+  @media (min-width: 600px) { @content; }
+}
+
+@mixin for-tablet-landscape-up {
+  @media (min-width: 900px) { @content; }
+}
+
+@mixin for-desktop-up {
+  @media (min-width: 1200px) { @content; }
+}
+
+@mixin for-large-desktop-up {
+  @media (min-width: 1800px) { @content; }
+}
+
+// Flexbox központosítás mixin
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// Grid layout mixin
+@mixin grid-layout($columns: 1, $gap: 16px) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  gap: $gap;
+}
+
+// Árnyék mixin
+@mixin shadow($level: 1) {
+  @if $level == 1 {
+    box-shadow: var(--shadow-sm);
+  } @else if $level == 2 {
+    box-shadow: var(--shadow-md);
+  } @else if $level == 3 {
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+// Átmenet mixin
+@mixin transition($property: all, $duration: 0.3s, $timing: ease) {
+  transition: $property $duration $timing;
+}
+
+// Csonkolás több soros szövegekhez
+@mixin line-clamp($lines) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Akadálymentes fókusz stílus
+@mixin focus-outline {
+  outline: 3px solid var(--accent-light);
+  outline-offset: 2px;
+}
+
+// ========== ALAP STÍLUSOK ==========
 html, body { 
   height: 100%; 
+  margin: 0;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+  color: var(--text-on-accent);
   background-color: var(--background-color);
+  overflow-x: hidden; /* Vízszintes görgetés megakadályozása */
+  width: 100%; /* Biztosítja, hogy ne legyen szélesebb, mint a viewport */
+  position: relative; /* Biztosítja a helyes méretezést a pozicionált elemeknél */
 }
 
 body { 
   margin: 0; 
   font-family: Roboto, "Helvetica Neue", sans-serif;
   color: #333333;
+  overflow-x: hidden; /* Vízszintes görgetés megakadályozása */
+  max-width: 100vw; /* Biztosítja, hogy ne legyen szélesebb, mint a viewport */
 }
 
 // Alap konténer stílusok
@@ -194,6 +318,15 @@ a {
   
   .container {
     padding: 15px;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Biztosítja, hogy minden elem a viewport szélességén belül maradjon */
+  * {
+    max-width: 100%;
+    box-sizing: border-box;
   }
 }
 
@@ -241,4 +374,75 @@ a {
 .dark-mode .brand-badge {
   background-color: var(--primary-color);
   color: black;
+}
+
+// Snackbar értesítések globális stílusai
+.success-snackbar {
+  background-color: var(--success-color) !important;
+  color: white !important;
+  
+  .mat-simple-snackbar-action {
+    color: white !important;
+  }
+  
+  // Pipa ikon hozzáadása (opcionális)
+  .mat-simple-snackbar span::before {
+    content: '✓ ';
+    font-weight: bold;
+  }
+}
+
+.error-snackbar {
+  background-color: var(--error-color) !important;
+  color: white !important;
+  
+  .mat-simple-snackbar-action {
+    color: white !important;
+  }
+}
+
+.warning-snackbar {
+  background-color: var(--warning-color) !important;
+  color: black !important;
+  
+  .mat-simple-snackbar-action {
+    color: black !important;
+  }
+}
+
+.info-snackbar {
+  background-color: var(--info-color) !important;
+  color: white !important;
+  
+  .mat-simple-snackbar-action {
+    color: white !important;
+  }
+}
+
+/* Mobilnézet vízszintes görgetés javítása */
+* {
+  box-sizing: border-box;
+}
+
+/* Szélesség túlnyúlás megakadályozása képeknél, táblázatoknál és egyéb elemeknél */
+img, table, iframe, video, .mat-mdc-card, .mat-card, pre, code {
+  max-width: 100%;
+}
+
+/* Túlnyúló elemek (pl. táblázatok) kezelése */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Angular Material elemek javítása */
+.mat-mdc-form-field {
+  max-width: 100%;
+}
+
+/* Megakadályozza a vízszintes görgetést, a oldal rugalmassá teszi */
+.app-root, app-root {
+  display: block;
+  width: 100%;
+  overflow-x: hidden;
 }

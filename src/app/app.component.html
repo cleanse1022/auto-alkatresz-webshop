@@ -4,42 +4,100 @@
     <span>Autó Alkatrész Webshop</span>
   </div>
   <span class="spacer"></span>
-  <a mat-button class="nav-link" routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
-    <mat-icon>home</mat-icon> Kezdőlap
-  </a>
-  <a mat-button class="nav-link" routerLink="/parts" routerLinkActive="active-link">
-    <mat-icon>settings</mat-icon> Alkatrészek
-  </a>
-  <ng-container *ngIf="user$ | async as user; else notLogged">
-    <ng-container *ngIf="isAdmin$ | async; else normalUser">
-      <a mat-button class="nav-link" routerLink="/admin" routerLinkActive="active-link">
-        <mat-icon>dashboard</mat-icon> Admin
-      </a>
+  
+  <!-- Asztali menü -->
+  <div class="desktop-menu">
+    <a mat-button class="nav-link" routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
+      <mat-icon>home</mat-icon> Kezdőlap
+    </a>
+    <a mat-button class="nav-link" routerLink="/parts" routerLinkActive="active-link">
+      <mat-icon>settings</mat-icon> Alkatrészek
+    </a>
+    <ng-container *ngIf="user$ | async as user; else desktopNotLogged">
+      <ng-container *ngIf="isAdmin$ | async; else desktopNormalUser">
+        <a mat-button class="nav-link" routerLink="/admin" routerLinkActive="active-link">
+          <mat-icon>dashboard</mat-icon> Admin
+        </a>
+      </ng-container>
+      <ng-template #desktopNormalUser>
+        <a mat-button class="nav-link" routerLink="/profile" routerLinkActive="active-link">
+          <mat-icon>person</mat-icon> Profil
+        </a>
+        <a mat-button class="nav-link" [class.cart-link]="((cartItemsCount$ | async) ?? 0) > 0" routerLink="/cart" routerLinkActive="active-link">
+          <mat-icon>shopping_cart</mat-icon> Kosár
+          <span *ngIf="((cartItemsCount$ | async) ?? 0) > 0" class="cart-badge">
+            {{cartItemsCount$ | async}}
+          </span>
+        </a>
+      </ng-template>
+      <button mat-button color="accent" (click)="signOut()">
+        <mat-icon>exit_to_app</mat-icon> Kijelentkezés
+      </button>
     </ng-container>
-    <ng-template #normalUser>
-      <a mat-button class="nav-link" routerLink="/profile" routerLinkActive="active-link">
-        <mat-icon>person</mat-icon> Profil
+    <ng-template #desktopNotLogged>
+      <a mat-button class="nav-link" routerLink="/login" routerLinkActive="active-link">
+        <mat-icon>login</mat-icon> Bejelentkezés
       </a>
-      <a mat-button class="nav-link" [class.cart-link]="((cartItemsCount$ | async) ?? 0) > 0" routerLink="/cart" routerLinkActive="active-link">
-        <mat-icon>shopping_cart</mat-icon> Kosár
-        <span *ngIf="((cartItemsCount$ | async) ?? 0) > 0" class="cart-badge">
-          {{cartItemsCount$ | async}}
-        </span>
+      <a mat-button class="nav-link" routerLink="/register" routerLinkActive="active-link">
+        <mat-icon>person_add</mat-icon> Regisztráció
       </a>
     </ng-template>
-    <button mat-button color="accent" (click)="signOut()">
-      <mat-icon>exit_to_app</mat-icon> Kijelentkezés
-    </button>
-  </ng-container>
-  <ng-template #notLogged>
-    <a mat-button class="nav-link" routerLink="/login" routerLinkActive="active-link">
-      <mat-icon>login</mat-icon> Bejelentkezés
+  </div>
+  
+  <!-- Mobil kosár gomb mindig látható -->
+  <div class="mobile-cart" *ngIf="(user$ | async) && !((isAdmin$ | async))">
+    <a mat-icon-button class="nav-link" [class.cart-link]="((cartItemsCount$ | async) ?? 0) > 0" routerLink="/cart" routerLinkActive="active-link">
+      <mat-icon>shopping_cart</mat-icon>
+      <span *ngIf="((cartItemsCount$ | async) ?? 0) > 0" class="cart-badge">
+        {{cartItemsCount$ | async}}
+      </span>
     </a>
-    <a mat-button class="nav-link" routerLink="/register" routerLinkActive="active-link">
-      <mat-icon>person_add</mat-icon> Regisztráció
-    </a>
-  </ng-template>
+  </div>
+  
+  <!-- Mobil hamburger menü gomb -->
+  <button mat-icon-button class="mobile-menu-toggle" (click)="toggleMobileMenu()">
+    <mat-icon>{{ mobileMenuOpen ? 'close' : 'menu' }}</mat-icon>
+  </button>
 </mat-toolbar>
+
+<!-- Mobil menü panel -->
+<div class="mobile-menu" [class.open]="mobileMenuOpen">
+  <div class="mobile-menu-items">
+    <a mat-button class="nav-link" routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">
+      <mat-icon>home</mat-icon> Kezdőlap
+    </a>
+    <a mat-button class="nav-link" routerLink="/parts" routerLinkActive="active-link" (click)="closeMobileMenu()">
+      <mat-icon>settings</mat-icon> Alkatrészek
+    </a>
+    <ng-container *ngIf="user$ | async as user">
+      <ng-container *ngIf="isAdmin$ | async; else mobileNormalUser">
+        <a mat-button class="nav-link" routerLink="/admin" routerLinkActive="active-link" (click)="closeMobileMenu()">
+          <mat-icon>dashboard</mat-icon> Admin
+        </a>
+      </ng-container>
+      <ng-template #mobileNormalUser>
+        <a mat-button class="nav-link" routerLink="/profile" routerLinkActive="active-link" (click)="closeMobileMenu()">
+          <mat-icon>person</mat-icon> Profil
+        </a>
+        <a mat-button class="nav-link" routerLink="/cart" routerLinkActive="active-link" (click)="closeMobileMenu()">
+          <mat-icon>shopping_cart</mat-icon> Kosár
+          <span *ngIf="((cartItemsCount$ | async) ?? 0) > 0" class="cart-count">{{cartItemsCount$ | async}}</span>
+        </a>
+      </ng-template>
+      <button mat-button color="accent" (click)="signOut(); closeMobileMenu()">
+        <mat-icon>exit_to_app</mat-icon> Kijelentkezés
+      </button>
+    </ng-container>
+    <ng-container *ngIf="!(user$ | async)">
+      <a mat-button class="nav-link" routerLink="/login" routerLinkActive="active-link" (click)="closeMobileMenu()">
+        <mat-icon>login</mat-icon> Bejelentkezés
+      </a>
+      <a mat-button class="nav-link" routerLink="/register" routerLinkActive="active-link" (click)="closeMobileMenu()">
+        <mat-icon>person_add</mat-icon> Regisztráció
+      </a>
+    </ng-container>
+  </div>
+</div>
 
 <div class="main-content">
   <router-outlet></router-outlet>

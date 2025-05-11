@@ -1,0 +1,18 @@
+{
+  "/api": {
+    "target": "https://firestore.googleapis.com",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": ""
+    }
+  },
+  "/storage": {
+    "target": "https://storage.googleapis.com",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/storage": ""
+    }
+  }
+}

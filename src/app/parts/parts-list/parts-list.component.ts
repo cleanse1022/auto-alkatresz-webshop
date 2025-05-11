@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ViewportScroller } from '@angular/common';
 import { MaterialModule } from '../../material.module';
@@ -6,27 +6,32 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { PartService } from '../../services/part.service';
 import { CartService } from '../../services/cart.service';
+import { CompareService } from '../../services/compare.service';
 import { Observable } from 'rxjs';
 import { Part } from '../../models/part.model';
 import { HungarianCurrencyPipe } from '../../pipes/hungarian-currency.pipe';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { PartCompareComponent } from '../part-compare/part-compare.component';
 
 @Component({
   standalone: true,
   selector: 'app-parts-list',
   templateUrl: './parts-list.component.html',
   styleUrls: ['./parts-list.component.scss'],
-  imports: [CommonModule, MaterialModule, RouterModule, HungarianCurrencyPipe, FormsModule, ReactiveFormsModule]
+  imports: [CommonModule, MaterialModule, RouterModule, HungarianCurrencyPipe, FormsModule, ReactiveFormsModule, PartCompareComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PartsListComponent implements OnInit {
   private userService: UserService = inject(UserService);
   private partService: PartService = inject(PartService);
   private cartService: CartService = inject(CartService);
+  private compareService: CompareService = inject(CompareService);
   private router: Router = inject(Router);
   private route: ActivatedRoute = inject(ActivatedRoute);
   private snackBar: MatSnackBar = inject(MatSnackBar);
   private viewportScroller: ViewportScroller = inject(ViewportScroller);
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   
   isAdmin$: Observable<boolean> = this.userService.isAdmin();
   
@@ -34,6 +39,9 @@ export class PartsListComponent implements OnInit {
   allParts: Part[] = [];
   filteredParts: Part[] = [];
   loading = true;
+  
+  // Összehasonlítási állapot
+  compareItems$ = this.compareService.compareItems$;
   
   // Kategóriák és márkák listája (a termékekből kigyűjtve)
   categories: string[] = [];
@@ -171,19 +179,36 @@ export class PartsListComponent implements OnInit {
     this.router.navigate(['/parts', id]);
   }
 
-  // Alkatrész kosárba helyezése
-  async addToCart(part: Part) {
-    // Meghívjuk a CartService aszinkron addToCart metódusát
+  /**
+   * Kosárhoz adja a terméket
+   */
+  async addToCart(part: Part): Promise<void> {
+    // Várjuk meg az aszinkron műveletet és csak akkor jelezzük a sikert, ha a Promise true-val tér vissza
     const success = await this.cartService.addToCart(part);
     
-    // Csak akkor jelenítünk meg sikeres üzenetet, ha a kosárba helyezés sikeres volt
     if (success) {
-      this.snackBar.open(
-        `${part.name} kosárba helyezve!`, 
-        'Bezárás',
-        { duration: 3000 }
-      );
+      this.snackBar.open(`${part.name} a kosárba került`, 'Rendben', {
+        duration: 3000
+      });
     }
-    // Ha nem sikeres (false), akkor az értesítést már kezelte a CartService
+    // Ha nem sikeres, akkor nem jelenítünk meg üzenetet itt, mert a CartService már megjeleníti
+    // a bejelentkezésre figyelmeztető üzenetet
+  }
+  
+  /**
+   * Ellenőrzi, hogy az adott termék már szerepel-e az összehasonlításban
+   */
+  isInCompare(partId: string): boolean {
+    return this.compareService.isInCompare(partId);
+  }
+  
+  /**
+   * Hozzáadja a terméket az összehasonlító listához
+   */
+  addToCompare(part: Part): void {
+    if (this.compareService.addToCompare(part)) {
+      // OnPush változásérzékelés miatt szükséges
+      this.cdr.markForCheck();
+    }
   }
 }

@@ -1,5 +1,10 @@
 <div class="container">
   <h1 class="page-title">Alkatrészek katalógusa</h1>
+  
+  <!-- Összehasonlító komponens -->
+  <app-part-compare class="compare-section"></app-part-compare>
+  
+  <div class="section-divider"></div>
 
   <!-- Szűrő panelek -->
   <div class="filter-container">
@@ -53,13 +58,13 @@
     </button>
   </div>
 
-  <!-- Loading spinner while fetching data -->
+  <!-- Betöltő spinner az adatok lekérése közben -->
   <div *ngIf="loading" class="loading-spinner">
     <mat-spinner diameter="40"></mat-spinner>
     <p>Alkatrészek betöltése...</p>
   </div>
 
-  <!-- No parts found message -->
+  <!-- Nincs találat üzenet -->
   <div *ngIf="filteredParts.length === 0 && !loading" class="no-data">
     <ng-container *ngIf="allParts.length === 0; else noMatchingParts">
       <mat-icon>inventory_2</mat-icon>
@@ -90,15 +95,26 @@
         <p class="part-price">{{ part.price | hungarianCurrency }}</p>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-button color="primary" (click)="part.id && viewPart(part.id); $event.stopPropagation()">
-          <mat-icon>visibility</mat-icon> Részletek
+        <button mat-icon-button color="primary" 
+                (click)="part.id && viewPart(part.id); $event.stopPropagation()" 
+                matTooltip="Részletek" matTooltipPosition="above">
+          <mat-icon>visibility</mat-icon>
         </button>
         <button 
           *ngIf="!(isAdmin$ | async)" 
-          mat-button 
+          mat-icon-button 
           color="accent"
-          (click)="addToCart(part); $event.stopPropagation()">
-          <mat-icon>shopping_cart</mat-icon> Kosárba
+          (click)="addToCart(part); $event.stopPropagation()"
+          matTooltip="Kosárba helyezés" matTooltipPosition="above">
+          <mat-icon>shopping_cart</mat-icon>
+        </button>
+        <button 
+          mat-icon-button 
+          color="basic"
+          [disabled]="isInCompare(part.id || '')"
+          (click)="addToCompare(part); $event.stopPropagation()"
+          matTooltip="Összehasonlításhoz adás" matTooltipPosition="above">
+          <mat-icon>compare</mat-icon>
         </button>
       </mat-card-actions>
     </mat-card>

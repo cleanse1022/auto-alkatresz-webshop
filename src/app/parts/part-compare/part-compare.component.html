@@ -1,0 +1,33 @@
+<div class="compare-container" *ngIf="(compareItems$ | async)?.length ?? 0">
+  <div class="compare-header">
+    <h3>Összehasonlításra kiválasztott alkatrészek ({{ (compareItems$ | async)?.length ?? 0 }})</h3>
+    <div class="compare-actions">
+      <button mat-raised-button color="primary" (click)="openCompareDialog()" [disabled]="((compareItems$ | async)?.length ?? 0) < 2">
+        <mat-icon>compare_arrows</mat-icon>
+        Összehasonlítás
+      </button>
+      <button mat-button color="warn" (click)="clearCompare()">
+        <mat-icon>clear_all</mat-icon>
+        Összes törlése
+      </button>
+    </div>
+  </div>
+  
+  <div class="compare-items">
+    <div class="compare-item" *ngFor="let item of compareItems$ | async">
+      <div class="item-image">
+        <img *ngIf="item.imageUrl" [src]="item.imageUrl" [alt]="item.name">
+        <div class="no-image" *ngIf="!item.imageUrl">
+          <mat-icon>image_not_supported</mat-icon>
+        </div>
+      </div>
+      <div class="item-details">
+        <h4>{{ item.name }}</h4>
+        <div class="item-price">{{ item.price | hungarianCurrency }}</div>
+      </div>
+      <button mat-icon-button color="warn" class="remove-button" (click)="removeFromCompare(item.id || '')">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

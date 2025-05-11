@@ -92,7 +92,7 @@ export class OrderService {
       map(snapshot => {
         return snapshot.docs.map(doc => {
           const data = doc.data() as Order;
-          // Convert Firestore timestamps to Date objects
+          // Firestore időbélyegek konvertálása Date objektumokká
           if (data.createdAt && typeof data.createdAt !== 'string') {
             data.createdAt = (data.createdAt as any).toDate();
           }
@@ -117,7 +117,7 @@ export class OrderService {
       map(snapshot => {
         return snapshot.docs.map(doc => {
           const data = doc.data() as Order;
-          // Convert Firestore timestamps to Date objects
+          // Firestore időbélyegek konvertálása Date objektumokká
           if (data.createdAt && typeof data.createdAt !== 'string') {
             data.createdAt = (data.createdAt as any).toDate();
           }
@@ -141,7 +141,7 @@ export class OrderService {
         }
         
         const data = docSnap.data() as Order;
-        // Convert Firestore timestamps to Date objects
+        // Firestore időbélyegek konvertálása Date objektumokká
         if (data.createdAt && typeof data.createdAt !== 'string') {
           data.createdAt = (data.createdAt as any).toDate();
         }

@@ -10,8 +10,12 @@
     padding: 16px;
   }
   
+  @media (max-width: 599px) {
+    padding: 12px 10px;
+  }
+  
   @media (max-width: 480px) {
-    padding: 12px;
+    padding: 10px 8px;
   }
 }
 
@@ -20,6 +24,7 @@
   align-items: center;
   margin-bottom: 20px;
   font-size: 14px;
+  flex-wrap: wrap;
   
   a {
     color: var(--primary-color);
@@ -41,6 +46,23 @@
   span {
     color: #666;
     font-weight: 500;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    @media (max-width: 480px) {
+      max-width: 150px;
+    }
+  }
+  
+  @media (max-width: 599px) {
+    margin-bottom: 15px;
+    font-size: 13px;
+  }
+  
+  @media (max-width: 480px) {
+    margin-bottom: 12px;
   }
 }
 
@@ -49,6 +71,14 @@
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  
+  @media (max-width: 599px) {
+    margin-bottom: 25px;
+  }
+  
+  @media (max-width: 480px) {
+    margin-bottom: 20px;
+  }
 }
 
 .loading-spinner {
@@ -58,9 +88,22 @@
   justify-content: center;
   margin: 60px 0;
   
+  @media (max-width: 599px) {
+    margin: 40px 0;
+  }
+  
+  @media (max-width: 480px) {
+    margin: 30px 0;
+  }
+  
   p {
     margin-top: 16px;
     color: #666;
+    
+    @media (max-width: 480px) {
+      margin-top: 12px;
+      font-size: 14px;
+    }
   }
 }
 
@@ -70,6 +113,16 @@ mat-card {
   box-sizing: border-box;
   width: calc(100% - 32px);
   overflow: hidden;
+  
+  @media (max-width: 599px) {
+    margin: 8px;
+    width: calc(100% - 16px);
+  }
+  
+  @media (max-width: 480px) {
+    margin: 4px;
+    width: calc(100% - 8px);
+  }
 }
 
 .part-detail-container {
@@ -101,11 +154,21 @@ mat-card {
     height: 300px;
   }
   
+  @media (max-width: 599px) {
+    height: 280px;
+    padding: 20px;
+  }
+  
   @media (max-width: 480px) {
     min-width: 100%;
-    height: 250px;
-    padding: 16px;
+    height: 220px;
+    padding: 12px;
     width: 100%;
+  }
+  
+  @media (max-width: 375px) {
+    height: 180px;
+    padding: 8px;
   }
 }
 
@@ -130,9 +193,17 @@ mat-card {
     max-width: 100%;
   }
   
+  @media (max-width: 599px) {
+    padding: 20px 16px;
+  }
+  
   @media (max-width: 480px) {
-    padding: 16px;
+    padding: 16px 12px;
     width: 100%;
+  }
+  
+  @media (max-width: 375px) {
+    padding: 12px 10px;
   }
 }
 
@@ -141,6 +212,25 @@ mat-card {
   font-weight: 600;
   color: var(--primary-color);
   margin: 0 0 16px 0;
+  
+  @media (max-width: 768px) {
+    font-size: 26px;
+  }
+  
+  @media (max-width: 599px) {
+    font-size: 24px;
+    margin-bottom: 14px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  
+  @media (max-width: 375px) {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
 }
 
 .part-meta {
@@ -177,22 +267,70 @@ mat-card {
   font-weight: 600;
   color: var(--accent-color);
   margin-bottom: 24px;
+  
+  @media (max-width: 768px) {
+    font-size: 30px;
+    margin-bottom: 22px;
+  }
+  
+  @media (max-width: 599px) {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 26px;
+    margin-bottom: 18px;
+  }
+  
+  @media (max-width: 375px) {
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
 }
 
 .part-description {
   margin-bottom: 30px;
+  
+  @media (max-width: 599px) {
+    margin-bottom: 25px;
+  }
+  
+  @media (max-width: 480px) {
+    margin-bottom: 20px;
+  }
   
   h3 {
     font-size: 18px;
     font-weight: 500;
     color: var(--primary-color);
     margin-bottom: 12px;
+    
+    @media (max-width: 599px) {
+      font-size: 17px;
+      margin-bottom: 10px;
+    }
+    
+    @media (max-width: 480px) {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
   }
   
   p {
     color: #555;
     line-height: 1.6;
     white-space: pre-line;
+    
+    @media (max-width: 599px) {
+      line-height: 1.5;
+      font-size: 15px;
+    }
+    
+    @media (max-width: 480px) {
+      line-height: 1.4;
+      font-size: 14px;
+    }
   }
 }
 
@@ -214,8 +352,36 @@ mat-card {
       width: 80px;
       margin: 0 10px;
       
+      @media (max-width: 599px) {
+        width: 70px;
+        margin: 0 8px;
+      }
+      
+      @media (max-width: 480px) {
+        width: 60px;
+        margin: 0 6px;
+      }
+      
       input {
         text-align: center;
+      }
+      
+      ::ng-deep .mat-mdc-form-field-infix {
+        @media (max-width: 480px) {
+          padding-top: 10px;
+          padding-bottom: 10px;
+        }
+      }
+    }
+    
+    button {
+      @media (max-width: 480px) {
+        ::ng-deep .mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+          line-height: 20px;
+        }
       }
     }
   }
@@ -267,12 +433,39 @@ mat-card {
 .recommended-products {
   margin-top: 50px;
   
+  @media (max-width: 768px) {
+    margin-top: 40px;
+  }
+  
+  @media (max-width: 599px) {
+    margin-top: 30px;
+  }
+  
+  @media (max-width: 480px) {
+    margin-top: 25px;
+  }
+  
   h2 {
     font-size: 24px;
     font-weight: 500;
     color: var(--primary-color);
     margin-bottom: 24px;
     position: relative;
+    
+    @media (max-width: 768px) {
+      font-size: 22px;
+      margin-bottom: 22px;
+    }
+    
+    @media (max-width: 599px) {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+    
+    @media (max-width: 480px) {
+      font-size: 18px;
+      margin-bottom: 18px;
+    }
     
     &:after {
       content: '';
@@ -282,6 +475,16 @@ mat-card {
       width: 60px;
       height: 3px;
       background-color: var(--accent-color);
+      
+      @media (max-width: 599px) {
+        width: 50px;
+        height: 2px;
+        bottom: -8px;
+      }
+      
+      @media (max-width: 480px) {
+        width: 40px;
+      }
     }
   }
   
@@ -292,6 +495,23 @@ mat-card {
     margin-top: 30px;
     width: 100%;
     box-sizing: border-box;
+    
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+      margin-top: 25px;
+    }
+    
+    @media (max-width: 599px) {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+    
+    @media (max-width: 480px) {
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+    }
   }
   
   .empty-recommendation {
@@ -299,6 +519,20 @@ mat-card {
     text-align: center;
     color: #888;
     padding: 40px 0;
+    
+    @media (max-width: 768px) {
+      padding: 30px 0;
+    }
+    
+    @media (max-width: 599px) {
+      padding: 25px 0;
+      font-size: 15px;
+    }
+    
+    @media (max-width: 480px) {
+      padding: 20px 0;
+      font-size: 14px;
+    }
   }
 }
 
@@ -355,3 +589,5 @@ mat-card {
     overflow: hidden;
   }
 }
+
+/* A konkétrabb reszponzív beállítások már a megfelelő elemeknél vannak definiálva */

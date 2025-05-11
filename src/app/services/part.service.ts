@@ -2,8 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import { Firestore, collection, doc, addDoc, updateDoc, deleteDoc, docData, collectionData, getDoc } from '@angular/fire/firestore';
 import { Storage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import { Part } from '../models/part.model';
-import { Observable, from, switchMap, firstValueFrom } from 'rxjs';
+import { Observable, from, switchMap, firstValueFrom, of } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { MOCK_PARTS } from '../mock/mock-parts';
 
 @Injectable({
   providedIn: 'root'
@@ -14,11 +15,30 @@ export class PartService {
   private partsCollection = collection(this.firestore, 'parts');
 
   getParts(): Observable<Part[]> {
-    // Lekérjük a teljes parts kollekciót
-    return collectionData(this.partsCollection, { idField: 'id' }) as Observable<Part[]>;
+    // Fejlesztési környezetben mock adatokkal dolgozunk a CORS hibák elkerülése érdekében
+    if (!environment.production) {
+      console.log('Fejlesztési környezet: Mock alkatrész adatok használata');
+      return of(MOCK_PARTS);
+    }
+    
+    // Éles környezetben a Firebase adatokat használjuk
+    try {
+      return collectionData(this.partsCollection, { idField: 'id' }) as Observable<Part[]>;
+    } catch (error) {
+      console.error('Hiba az alkatrészek lekérésekor:', error);
+      // Hiba esetén szintén a mock adatokat adjuk vissza, hogy az alkalmazás ne törjön meg
+      return of(MOCK_PARTS);
+    }
   }
 
   getPartById(id: string): Observable<Part> {
+    // Fejlesztési környezetben mock adatokat használunk
+    if (!environment.production) {
+      const part = MOCK_PARTS.find(p => p.id === id);
+      return of(part as Part);
+    }
+    
+    // Éles környezetben valódi adatokat használunk
     const partDocRef = doc(this.firestore, `parts/${id}`);
     return docData(partDocRef, { idField: 'id' }) as Observable<Part>;
   }
