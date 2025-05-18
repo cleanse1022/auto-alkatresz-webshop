@@ -1,5 +1,7 @@
 # Autó Alkatrész Webshop, Webfejlesztési keretrendszerek projektmunka
 
+A HOSTOLT WEBOLDAL: https://autoalkatresz-webshop.web.app/
+
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.5.
 
 ## Development server
